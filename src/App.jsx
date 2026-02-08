@@ -110,7 +110,7 @@ const App = () => {
   const formatTime = (s) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`;
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-neutral-100 p-4 md:p-8 flex flex-col items-center overflow-x-hidden">
+    <div className="min-h-screen bg-neutral-950 text-neutral-100 font-sans p-4 md:p-8 flex flex-col items-center overflow-x-hidden">
       <div className="max-w-md w-full space-y-6 flex-grow">
         
         <header className="text-center space-y-2">
@@ -121,7 +121,7 @@ const App = () => {
         </header>
 
         {!isBrewing && seconds === 0 ? (
-          <div className="bg-neutral-900 rounded-3xl p-6 shadow-xl border border-neutral-800 space-y-8">
+          <div className="bg-neutral-900 rounded-3xl p-6 shadow-xl border border-neutral-800 space-y-8 animate-in fade-in duration-500">
             <div className="space-y-4">
               <div className="flex justify-between items-end">
                 <label className="text-sm font-medium text-neutral-400">目標の湯量</label>
@@ -141,7 +141,7 @@ const App = () => {
                   <button
                     key={id} onClick={() => setFlavor(id)}
                     className={`py-3 px-1 rounded-xl text-xs font-bold border-2 transition-all ${
-                      flavor === id ? 'bg-amber-600 text-white border-amber-400' : 'bg-neutral-800 text-neutral-400 border-transparent'
+                      flavor === id ? 'bg-amber-600 text-white border-amber-400 shadow-lg' : 'bg-neutral-800 text-neutral-400 border-transparent'
                     }`}
                   >
                     {id === 'acidic' ? 'より明るく' : id === 'balanced' ? '標準' : 'より甘く'}
@@ -152,17 +152,22 @@ const App = () => {
 
             <div className="space-y-3">
               <label className="text-sm font-medium text-neutral-400 flex items-center gap-2">
-                <Beaker size={14} className="text-amber-500" /> 濃度の調整
+                <Beaker size={14} className="text-amber-500" />
+                濃度の調整
               </label>
               <div className="grid grid-cols-3 gap-2">
-                {['light', 'medium', 'strong'].map((id) => (
+                {[
+                  { id: 'light', label: '薄め' },
+                  { id: 'medium', label: '濃いめ' },
+                  { id: 'strong', label: 'さらに濃く' }
+                ].map((opt) => (
                   <button
-                    key={id} onClick={() => setStrength(id)}
+                    key={opt.id} onClick={() => setStrength(opt.id)}
                     className={`py-3 px-1 rounded-xl text-xs font-bold border-2 transition-all ${
-                      strength === id ? 'bg-amber-600 text-white border-amber-400' : 'bg-neutral-800 text-neutral-400 border-transparent'
+                      strength === opt.id ? 'bg-amber-600 text-white border-amber-400 shadow-lg' : 'bg-neutral-800 text-neutral-400 border-transparent'
                     }`}
                   >
-                    {id === 'light' ? '薄め' : id === 'medium' ? '濃いめ' : 'さらに濃く'}
+                    {opt.label}
                   </button>
                 ))}
               </div>
@@ -187,7 +192,7 @@ const App = () => {
             </button>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-4 animate-in zoom-in-95 duration-300">
             <div className="bg-neutral-900 rounded-3xl p-8 shadow-2xl border border-neutral-800 text-center space-y-4 relative overflow-hidden">
               <div className="absolute top-0 left-0 h-1 bg-amber-500 transition-all duration-1000" style={{ width: `${Math.min((seconds / 210) * 100, 100)}%` }} />
               <p className="text-5xl font-mono font-black tracking-tighter text-amber-500">{formatTime(seconds)}</p>
@@ -212,7 +217,7 @@ const App = () => {
 
             <div className="bg-neutral-900 rounded-2xl p-4 border border-neutral-800 space-y-3 max-h-64 overflow-y-auto">
               {allSteps.map((step, idx) => (
-                <div key={step.id} className={`flex items-center justify-between p-3 rounded-xl border ${currentStepIndex === idx ? 'bg-amber-500/10 border-amber-500/30' : 'opacity-40 border-transparent'}`}>
+                <div key={step.id} className={`flex items-center justify-between p-3 rounded-xl border transition-colors ${currentStepIndex === idx ? 'bg-amber-500/10 border-amber-500/30' : 'opacity-40 border-transparent'}`}>
                   <div className="flex items-center gap-3 text-left">
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${currentStepIndex === idx ? 'bg-amber-500 text-neutral-950' : 'bg-neutral-800 text-neutral-400'}`}>
                       {idx + 1}
@@ -241,16 +246,33 @@ const App = () => {
       </div>
 
       <footer className="w-full max-w-md pt-8 flex flex-col items-center gap-4">
-        <button onClick={() => window.open('https://philocoffea.com/?mode=f3', '_blank')} className="group flex items-center gap-2 px-4 py-2 bg-neutral-900 border border-neutral-800 rounded-xl text-neutral-400 text-[10px] hover:text-amber-500 hover:border-amber-500/50 transition-all uppercase tracking-widest">
-          <span>Official Recipe by Tetsu Kasuya</span>
-          <ExternalLink size={10} />
+        <button onClick={() => window.open('https://philocoffea.com/?mode=f3', '_blank')} className="group flex items-center gap-2 px-4 py-2 bg-neutral-900 border border-neutral-800 rounded-xl text-neutral-400 text-[10px] hover:text-amber-500 hover:border-amber-500/50 transition-all uppercase tracking-widest text-center">
+          <span>Official Recipe by Tetsu Kasuya (Philocoffea)</span>
+          <ExternalLink size={10} className="ml-1 inline" />
         </button>
       </footer>
+
+      {/* Tailwindで処理できないカスタムCSSをインラインで定義 */}
+      <style>{`
+        .animate-in { animation: animateIn 0.5s ease-out; }
+        @keyframes animateIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        input[type='range']::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          appearance: none;
+          width: 20px;
+          height: 20px;
+          background: #f59e0b;
+          border-radius: 50%;
+          border: 4px solid #171717;
+          box-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
+          cursor: pointer;
+        }
+      `}</style>
     </div>
   );
 };
 
-// --- Rendering Logic (Vite Entry Point) ---
+// レンダリング
 const container = document.getElementById('root');
 if (container) {
   const root = createRoot(container);
