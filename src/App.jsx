@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createRoot } from 'react-dom/client';
 import { Play, Pause, RotateCcw, Coffee, Droplets, Info, ChevronRight, ExternalLink, Volume2, Beaker } from 'lucide-react';
 
 const App = () => {
   // --- Configuration State ---
   const [targetWater, setTargetWater] = useState(300);
-  const [flavor, setFlavor] = useState('balanced'); // 'sweet', 'balanced', 'acidic'
-  const [strength, setStrength] = useState('strong'); // 'light', 'medium', 'strong'
+  const [flavor, setFlavor] = useState('balanced');
+  const [strength, setStrength] = useState('strong');
   const [isBrewing, setIsBrewing] = useState(false);
   
   // --- Timer State ---
@@ -18,7 +19,6 @@ const App = () => {
   const firstPhaseTotal = targetWater * 0.4;
   const secondPhaseTotal = targetWater * 0.6;
 
-  // 1. 前半40%の計算 (味の調整)
   let pour1, pour2;
   if (flavor === 'sweet') {
     pour1 = Math.round(firstPhaseTotal * (5/12)); 
@@ -31,7 +31,6 @@ const App = () => {
     pour2 = Math.round(firstPhaseTotal * 0.5);
   }
 
-  // 2. 後半60%の計算 (濃度の調整)
   const secondPhaseSteps = [];
   if (strength === 'light') {
     secondPhaseSteps.push({ time: 90, amount: Math.round(secondPhaseTotal), label: '3投目: 濃度調整（軽やか）' });
@@ -111,7 +110,7 @@ const App = () => {
   const formatTime = (s) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`;
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-neutral-100 font-sans p-4 md:p-8 flex flex-col items-center">
+    <div className="min-h-screen bg-neutral-950 text-neutral-100 p-4 md:p-8 flex flex-col items-center overflow-x-hidden">
       <div className="max-w-md w-full space-y-6 flex-grow">
         
         <header className="text-center space-y-2">
@@ -247,12 +246,15 @@ const App = () => {
           <ExternalLink size={10} />
         </button>
       </footer>
-
-      <style>{`
-        input[type='range']::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; background: #f59e0b; border-radius: 50%; border: 4px solid #171717; }
-      `}</style>
     </div>
   );
 };
+
+// --- Rendering Logic (Vite Entry Point) ---
+const container = document.getElementById('root');
+if (container) {
+  const root = createRoot(container);
+  root.render(<App />);
+}
 
 export default App;
